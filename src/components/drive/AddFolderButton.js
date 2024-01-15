@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { Button, Modal, Form } from "react-bootstrap";
 import { database } from "../../firebase";
+import { useAuth } from "../../contexts/AuthContext";
 
-export default function AddFolderButton() {
+export default function AddFolderButton({ currentFolder }) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
-  function opebModal() {
+  const { currentUser } = useAuth();
+  function openModal() {
     setOpen(true);
   }
   function closeModal() {
@@ -13,17 +15,21 @@ export default function AddFolderButton() {
   }
   function handleSubmit(e) {
     e.preventDefault();
-    // create folder in database
+    if (currentFolder == null) return;
     database.folders.add({
       name: name,
-    })
+      parentId: currentFolder.id,
+      userId: currentUser.uid,
+      //path,
+      createdAt: database.getCurrentTimestamp(),
+    });
     setName("");
     closeModal();
   }
 
   return (
     <>
-      <Button onClick={opebModal} variant="dark" size="sm">
+      <Button onClick={openModal} variant="dark" size="sm">
         Add Folder
       </Button>
       <Modal show={open} onHide={closeModal}>
