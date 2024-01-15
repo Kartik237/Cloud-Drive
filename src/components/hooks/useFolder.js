@@ -64,7 +64,8 @@ export function useFolder(folderId = null, folder = null) {
           payload: { folder: database.formatDoc(doc) },
         });
       })
-      .catch(() => {
+      .catch((e) => {
+        console.error(e);
         dispatch({
           type: ACTIONS.UPDATE_FOLDER,
           payload: { folder: ROOT_FOLDER },
@@ -73,18 +74,16 @@ export function useFolder(folderId = null, folder = null) {
   }, [folderId]); //only effects when folder id changes
 
   useEffect(() => {
-    database.folders
+    return database.folders
       .where("parentId", "==", folderId)
       .where("userId", "==", currentUser.uid)
       .orderBy("createdAt")
-      .get()
-      .then((snapshot) => {
+      .onSnapshot(snapshot => {
         dispatch({
           type: ACTIONS.SET_CHILD_FOLDERS,
           payload: { childFolders: snapshot.docs.map(database.formatDoc) },
-        });
-      });
-  }, [folderId, currentUser]);
-
+        })
+      })
+  }, [folderId, currentUser])
   return state;
 }

@@ -4,7 +4,14 @@ import { Link } from "react-router-dom";
 
 export default function Folder({ folder }) {
   return (
-    <Button to={`/folder/${folder.id}`} variant="outline-dark" as={Link}>
+    <Button
+      to={{
+        pathname: `/folder/${folder.id}`,
+        state: { folder: folder },
+      }}
+      variant="outline-dark"
+      as={Link}
+    >
       {folder.name}
     </Button>
   );
